@@ -1,4 +1,3 @@
-
 rm(list=ls())
 
 #----------------------------------------------------------
@@ -23,7 +22,6 @@ data<- data %>% dplyr::select(-c(hearing.left., hearing.right.,
                                eyesight.right.))
 
 #factorizing the response variable
-data <- data %>% mutate(smoking=as.factor(smoking))
 
 # Summary of datasets
 # data: original data 
@@ -51,7 +49,7 @@ data <- data %>% mutate(smoking=as.factor(smoking))
 
 target = "smoking"
 continuous_var<- data %>% dplyr::select(-all_of(target)) %>% names()
-
+data$smoking <- as.factor(data$smoking)
 
 #----------------------------------------------------------
 # Split data 
@@ -60,6 +58,7 @@ continuous_var<- data %>% dplyr::select(-all_of(target)) %>% names()
 set.seed(123) 
 data <- data %>%
   mutate(split = ifelse(runif(n()) < 0.7, "train", "test"))
+
 
 train_org <- data %>% filter(split == "train") %>% dplyr::select(-c(split))
 train_org_std<- train_org %>%  mutate(across(all_of(continuous_var),~scale(.)[,1]))
@@ -204,9 +203,9 @@ fit_qda <- function(train_df, valid_df, label = "model") {
 # -------------------------------------------------------------
 # 2  Fit e Risults
 # -------------------------------------------------------------
-res1_qda <- fit_qda(X_train, X_train, "QDA_full")
-res2_qda <- fit_qda(X_train2, X_train2, "QDA_drop4")
-res3_qda <- fit_qda(X_train3, X_train3, "QDA_drop11")
+res1_qda <- fit_qda(X_train, X_validation, "QDA_full")
+res2_qda <- fit_qda(X_train2, X_validation2, "QDA_drop4")
+res3_qda <- fit_qda(X_train3, X_validation3, "QDA_drop11")
 #i modelli sono
 qda1 <-res1_qda$model
 qda2 <- res2_qda$model
